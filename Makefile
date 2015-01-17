@@ -8,7 +8,7 @@ testtool:
 
 dynamic:
 	$(CC) $(CFLAGS) -c -fpic libmain.c mod_*.c
-	$(CC) -o libdbticket.so libmain.o mod_*.o 
+	$(CC) -shared -o libdbticket.so libmain.o mod_*.o 
 	rm *.o
 
 
