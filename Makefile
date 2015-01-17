@@ -4,7 +4,7 @@ CFLAGS=-O3
 all: testtool
 
 testtool:
-	$(CC) -o testtool testtool.c mod_*.c
+	$(CC) -o testtool testtool.c libmain.c mod_*.c
 
 dynamic:
 	$(CC) $(CFLAGS) -c -fpic libmain.c mod_*.c
@@ -12,7 +12,10 @@ dynamic:
 	rm *.o
 
 
-clean:
+clean-testtool:
 	rm testtool
-	rm db-ticket.so
-	rm db-ticket.a
+
+clean-dynamic:
+	rm libdbticket.so
+
+clean: clean-testtool clean-dynamic

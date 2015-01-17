@@ -5,17 +5,25 @@
 
 #include <stdio.h>
 #include "modules.h"
+#include "db-ticket.h"
 
 #define COMPOUT(i, s) printf(s ": "); if (i == 1) { printf("pass!\n"); } else { printf("fail!\n"); }
 
 int main(int argc, char const *argv[])
 {
+
+	printf("db-ticket test tool\n\n");
+
 	if (argc != 2) {
 		fprintf(stderr, "Invalid parameter count\n");
 		return 1;
 	}
 
 	FILE *fptr = fopen(argv[1], "rb");
+
+	printf("File: %s\n\n", argv[1]);
+
+	printf(" -- TEST ONE: Module test --\n");
 
 	short b = hasAcceptableSize(fptr);
 	COMPOUT(b, "File size");
@@ -41,7 +49,16 @@ int main(int argc, char const *argv[])
 	short e = hasImageHexcode(fptr);
 	COMPOUT(e, "Image hex");
 
-	printf("Score: %d out of 5\n\n", (a+b+c+d+e));
+	printf("Score: %d out of 5\n", (a+b+c+d+e));
+
+	printf(" -- TEST TWO: API Test --\n");
+
+	float score = checkPDFFile(argv[1]);
+	if (score < 0) {
+		perror("An error occured");
+		return 3;
+	}
+	printf("API call: %.2f of %.2f points\n", score, kMaximumScore);
 
 	return 0;
 }
