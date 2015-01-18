@@ -18,9 +18,9 @@ void displayResult(short value, const char *testType)
 {
 	printf("%s: ", testType);
 	if (value == 1)
-		printf("pass!\n");
+		printf("\33[32mpass!\33[0m\n");
 	else
-		printf("fail!\n");
+		printf("\33[31mfail!\33[0m\n");
 }
 
 int main(int argc, char const *argv[])
