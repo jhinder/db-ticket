@@ -11,13 +11,13 @@ namespace dbticket
 
         internal static bool IsPDFv14(FileStream stream)
         {
-            return false;
+            return stream.ReadCompareSection(0, 8, Constants.PDFVersion);
         }
 
 
         internal static bool HasBinarySignature(FileStream stream)
         {
-            return false;
+            return stream.ReadCompareSection(9, 5, Constants.PDFBinary);
         }
     }
 }
