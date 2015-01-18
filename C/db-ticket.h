@@ -15,7 +15,7 @@
 
 #define kMaximumScore 6.5f
 
-float checkPDFFile(FILE *file);
-float checkPDFFile(const char *filename);
+float checkPDFFileByFile(FILE *file);
+float checkPDFFileByPath(const char *filename);
 
 #endif
