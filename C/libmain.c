@@ -12,6 +12,14 @@ float checkPDFFile(const char *filename)
 	FILE *fptr = fopen(filename, "rb");
 	if (fptr == NULL)
 		return -1;
+	
+	return checkPDFFile(fptr);
+}
+
+float checkPDFFile(FILE *fptr)
+{
+	if (file == NULL)
+		return -1;
 
 	float scorepoints = 0.0f;
 
@@ -40,4 +48,5 @@ float checkPDFFile(const char *filename)
 		scorepoints += 2.0f;
 
 	return scorepoints;
+
 }
