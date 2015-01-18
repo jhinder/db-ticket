@@ -1,7 +1,7 @@
 # API documentation
 
 ## C library
-Found in the `C/` directory. Developments happens on the `stdc` branch.
+Found in the `C` directory. Development happens on the `stdc` branch.
 
 #### Compiling
 You basically have four options. The first step, of course, is to download the repository. Then you can do the following:
@@ -11,7 +11,12 @@ You basically have four options. The first step, of course, is to download the r
 * Import the code into your project and use the functions that way. (Please note that the licence also applies in this case.)
 
 #### Using the C API
-In most cases, you'll only need one function call, which is `(float) checkPDFFile(const char *)` inside `db-ticket.h`.
+There are two API calls:
+
+* `(float) checkPDFFile(const char *)`
+* `(float) checkPDFFile(FILE *)`
+
+Both are found inside `db-ticket.h`, which is the public header.
 
 A return value of 0 or higher indicates a successful execution; other values indicate an error. (See the next section.)  
 The value represents how many scores the file scored. The maximum value is defined in `kkMaximumScore`.
@@ -25,9 +30,11 @@ Error codes for `checkPDFFile` are:
 * -2: File is either too large or too small to be a valid ticket file.
 
 ## C# .NET library
-Found in the `/` directory; development happens on the `netfx` branch.
+Found in the `netfx-cs` directory; development happens on the `netfx` branch.
 
-The project file is in Visual Studio 2013 format, but the code is targeting .NET v4.0.  
+The project file is in Visual Studio 2010 format (requires VS 10.0), and the code is targeting .NET v4.0.  
 This library is not a PCL (Portable Class Library) as PCLs don't know many classes in the `System.IO` namespace.
 
 The target is intentionally "high" – theoretically this could be as low as .NET v2.0 – because 4.0 is half a decade old by now, and one can safely assume that most systems have it installed. If you absolutely need 2.x or 3.x support, lower the target in the project settings.
+
+As of writing this, there is no public API for the .NET library. That will come later.
