@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 
-#define kMaximumScore 6.5f
+#define kMaximumScore 7.5f
 
 float checkPDFFileByFile(FILE *file);
 float checkPDFFileByPath(const char *filename);

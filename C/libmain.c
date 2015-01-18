@@ -47,6 +47,10 @@ float checkPDFFileByFile(FILE *fptr)
 	if (hasImageHexcode(fptr))
 		scorepoints += 2.0f;
 
+	int xRefLen = checkXrefTable(fptr);
+	if (xRefLen >= 75 && xRefLen <= 80)
+		scorepoints += 1.0f;
+
 	return scorepoints;
 
 }
