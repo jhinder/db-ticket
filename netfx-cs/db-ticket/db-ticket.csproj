@@ -40,6 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="FileStreamExtensions.cs" />
+    <Compile Include="ImageHexCode.cs" />
+    <Compile Include="PDFProducer.cs" />
+    <Compile Include="PDFSignature.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TicketCheck.cs" />
   </ItemGroup>

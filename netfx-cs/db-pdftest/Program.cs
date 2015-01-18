@@ -13,11 +13,17 @@ namespace db_pdftest
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Invalid argument count. You must pass the path to a file.");
+                Console.WriteLine("Invalid argument count. You must pass the path to a file.\nPress a key to exit.");
+                Console.ReadKey();
                 return;
             }
                
             TicketCheck tc_1 = new TicketCheck(args[1]);
+            Console.Write("Result: ");
+            Console.Write(String.Format("{0} of {1} points\n"), tc_1.Result, TicketCheck.MaximumScore);
+
+            Console.WriteLine("Press a key to exit.");
+            Console.ReadKey();
         }
     }
 }

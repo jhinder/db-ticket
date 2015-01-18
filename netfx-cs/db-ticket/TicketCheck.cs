@@ -10,6 +10,8 @@ namespace dbticket
     public class TicketCheck
     {
 
+        public const float MaximumScore = 5.5f;
+
         public double Result { get; private set; }
 
         /// <summary>

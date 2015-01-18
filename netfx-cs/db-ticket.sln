@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.22310.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "db-ticket", "db-ticket\db-ticket.csproj", "{C28CC643-1DC2-452E-ADFC-38CEBCD84017}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "db-pdftest", "db-pdftest\db-pdftest.csproj", "{C27D7020-DED7-4731-A68D-9099441B23C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C28CC643-1DC2-452E-ADFC-38CEBCD84017}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C28CC643-1DC2-452E-ADFC-38CEBCD84017}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C28CC643-1DC2-452E-ADFC-38CEBCD84017}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C27D7020-DED7-4731-A68D-9099441B23C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C27D7020-DED7-4731-A68D-9099441B23C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C27D7020-DED7-4731-A68D-9099441B23C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C27D7020-DED7-4731-A68D-9099441B23C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

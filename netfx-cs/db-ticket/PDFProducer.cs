@@ -13,7 +13,7 @@ namespace dbticket
         {
             // 1748 is the offset from EOL where the Producer string usually starts
             long location = stream.Length - 1748;
-            return stream.ReadCompareSection(location, 32, Constants.Producer);
+            return stream.ReadCompareSection(location, Constants.Producer.Length, Constants.Producer);
         }
 
     }
