@@ -31,7 +31,7 @@ short hasCorrectSignature(FILE *file)
 short hasCorrectPDFVersion(FILE *file)
 {
 	fseek(file, 0, SEEK_SET);
-	char *vBuf = (char*)malloc(8);
+	char *vBuf = (char*)calloc(8, 1);
 	fread(vBuf, 8, 1, file);
 	int pdfVerComp = strcmp(vBuf, PDF_VERSION);
 	free(vBuf);

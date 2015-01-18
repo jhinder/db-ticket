@@ -17,7 +17,7 @@
 short hasImageHexcode(FILE *file)
 {
 	fseek(file, 0x1A6, SEEK_SET);
-	char *imgStreamBuf = (char*) malloc(0x11);
+	char *imgStreamBuf = (char*)calloc(0x11, 1);
 	fread(imgStreamBuf, 0x11, 1, file);
 	int compResult = strcmp(imgStreamBuf, IMAGE_HEX);
 	free(imgStreamBuf);

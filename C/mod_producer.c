@@ -17,7 +17,7 @@
 short producerStringPresent(FILE *file)
 {
 	fseek(file, -(PRODUCER_OFFSET), SEEK_END);
-	char *prodBuf = (char*) malloc(43);
+	char *prodBuf = (char*)calloc(43, 1);
 	fread(prodBuf, 43, 1, file);
 	int compResult = strcmp(prodBuf, PRODUCER_CONST);
 	free(prodBuf);
