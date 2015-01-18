@@ -4,61 +4,112 @@
  */
 
 #include <stdio.h>
+#include <string.h>
+
 #include "modules.h"
 #include "db-ticket.h"
 
-#define COMPOUT(i, s) printf(s ": "); if (i == 1) { printf("pass!\n"); } else { printf("fail!\n"); }
+void _mods(const char *path);
+void _file(FILE *file);
+void _path(const char *path);
+
+// For displaying test results
+void displayResult(short value, const char *testType)
+{
+	printf("%s: ", testType);
+	if (value == 1)
+		printf("pass!\n");
+	else
+		printf("fail!\n");
+}
 
 int main(int argc, char const *argv[])
 {
+	printf("db-ticket test tool 0.3\n\n");
 
-	printf("db-ticket test tool\n\n");
-
-	if (argc != 2) {
-		fprintf(stderr, "Invalid parameter count\n");
+	if (argc < 2) {
+		fprintf(stderr, "Invalid parameters.\nUsage: %s file [mods|file|path]\n (default mode is 'mods')\n", argv[0]);
 		return 1;
 	}
 
-	FILE *fptr = fopen(argv[1], "rb");
+	short mode = 0;
+	if (argc == 3) {
+		if (strcmp(argv[2], "file") == 0)
+			mode = 1;
+		else if (strcmp(argv[2], "path") == 0)
+			mode = 2;
+	}
 
 	printf("File: %s\n\n", argv[1]);
 
-	printf(" -- TEST ONE: Module test --\n");
+	if (mode == 0) {
+		_mods(argv[1]);
+	} else if (mode == 1) {
+		FILE *fptr = fopen(argv[1], "rb");
+		_file(fptr);
+	} else if (mode == 2) {
+		_path(argv[1]);
+	}
+
+	return 0;
+}
+
+// Module testing
+void _mods(const char *path)
+{
+	FILE *fptr = fopen(path, "rb");
+
+	printf(" -- Module test --\n");
 
 	short b = hasAcceptableSize(fptr);
-	COMPOUT(b, "File size");
+	displayResult(b, "File size");
 	if (b == 0) {
 		printf("Wrong file size; ending before further checks.\n\n");
-		return 2;
+		return;
 	}
 
 	short a = producerStringPresent(fptr);
-	COMPOUT(a, "Producer string");
+	displayResult(a, "Producer string");
 
 	if (a == 0) {
 		short h = trailerContainsHTML(fptr);
-		COMPOUT(h, " -> HTML trailer");
+		displayResult(h, " -> HTML trailer");
 	}
 
 	short c = hasCorrectPDFVersion(fptr);
-	COMPOUT(c, "PDF 1.4");
+	displayResult(c, "PDF 1.4");
 	
 	short d = hasCorrectSignature(fptr);
-	COMPOUT(d, "PDF signature");
+	displayResult(d, "PDF signature");
 
 	short e = hasImageHexcode(fptr);
-	COMPOUT(e, "Image hex");
+	displayResult(e, "Image hex");
 
 	printf("Score: %d out of 5\n", (a+b+c+d+e));
+}
 
-	printf(" -- TEST TWO: API Test --\n");
+// Path API testing
+void _path(const char *path)
+{
+	printf(" -- API Test (path-based) --\n");
 
-	float score = checkPDFFileByPath(argv[1]);
+	float score = checkPDFFileByPath(path);
 	if (score < 0) {
-		perror("An error occured");
-		return 3;
+		perror("An error occured in _path()!");
+		return;
 	}
-	printf("API call: %.2f of %.2f points\n", score, kMaximumScore);
+	printf("API call (path): %.2f of %.2f points\n", score, kMaximumScore);
+}
 
-	return 0;
+// FILE* API testing
+void _file(FILE *file)
+{
+	printf(" -- API Test (FILE*-based) --\n");
+
+	float score = checkPDFFileByFile(file);
+	if (score < 0) {
+		perror("An error occured in _file()!");
+		return;
+	}
+	printf("API call (file): %.2f of %.2f points\n", score, kMaximumScore);
 }

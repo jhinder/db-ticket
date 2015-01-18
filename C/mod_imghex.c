@@ -4,8 +4,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "intf_file_src.h"
 
 /* At offset 0x1A6 a stream (which I suppose is the "DB" image in the head)
  * begins, and it has the following hex code (length 0x11)
@@ -16,11 +15,5 @@
 
 short hasImageHexcode(FILE *file)
 {
-	fseek(file, 0x1A6, SEEK_SET);
-	char *imgStreamBuf = (char*)calloc(0x11, 1);
-	fread(imgStreamBuf, 0x11, 1, file);
-	int compResult = strcmp(imgStreamBuf, IMAGE_HEX);
-	free(imgStreamBuf);
-	
-	return (compResult == 0);
+	return compareSection(file, 0x1A6, 0x11, IMAGE_HEX);
 }
