@@ -11,8 +11,11 @@
 #ifndef DB_TICKET_H
 #define DB_TICKET_H
 
+#include <stdio.h>
+
 #define kMaximumScore 6.5f
 
-float checkPDFFile(const char *filename);
+float checkPDFFileByFile(FILE *file);
+float checkPDFFileByPath(const char *filename);
 
 #endif

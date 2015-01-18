@@ -18,7 +18,7 @@ short trailerContainsHTML(FILE *file)
 {
 	// Read the last 512 bytes of the file and check for HTML_TAIL
 	fseek(file, -512, SEEK_END);
-	char *htmlBuf = (char*)malloc(512);
+	char *htmlBuf = (char*)calloc(512, 1);
 	fread(htmlBuf, 512, 1, file);
 	int tailExists = (strstr(htmlBuf, HTML_TAIL) != NULL);
 	free(htmlBuf);

@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
 
 	printf(" -- TEST TWO: API Test --\n");
 
-	float score = checkPDFFile(argv[1]);
+	float score = checkPDFFileByPath(argv[1]);
 	if (score < 0) {
 		perror("An error occured");
 		return 3;

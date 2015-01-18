@@ -7,9 +7,17 @@
 #include "modules.h"
 #include "db-ticket.h"
 
-float checkPDFFile(const char *filename)
+float checkPDFFileByPath(const char *filename)
 {
 	FILE *fptr = fopen(filename, "rb");
+	if (fptr == NULL)
+		return -1;
+	
+	return checkPDFFileByFile(fptr);
+}
+
+float checkPDFFileByFile(FILE *fptr)
+{
 	if (fptr == NULL)
 		return -1;
 
@@ -40,4 +48,5 @@ float checkPDFFile(const char *filename)
 		scorepoints += 2.0f;
 
 	return scorepoints;
+
 }
