@@ -71,9 +71,16 @@ void _mods(const char *path)
 	short a = producerStringPresent(fptr);
 	displayResult(a, "Producer string");
 
+	short h = 0;
 	if (a == 0) {
-		short h = trailerContainsHTML(fptr);
+		h = trailerContainsHTML(fptr);
 		displayResult(h, " -> HTML trailer");
+	}
+
+	if (h == 0) {
+		// only possible if no HTML header misplaces the xref table
+		int xRefLen = checkXrefTable(fptr);
+		printf("xref length: %d", xRefLen);
 	}
 
 	short c = hasCorrectPDFVersion(fptr);
@@ -95,7 +102,7 @@ void _path(const char *path)
 
 	float score = checkPDFFileByPath(path);
 	if (score < 0) {
-		perror("An error occured in _path()!");
+		fprintf(stderr, "An error occured in _path()!\n");
 		return;
 	}
 	printf("API call (path): %.2f of %.2f points\n", score, kMaximumScore);
@@ -108,7 +115,7 @@ void _file(FILE *file)
 
 	float score = checkPDFFileByFile(file);
 	if (score < 0) {
-		perror("An error occured in _file()!");
+		fprintf(stderr, "An error occured in _file()!\n");
 		return;
 	}
 	printf("API call (file): %.2f of %.2f points\n", score, kMaximumScore);
