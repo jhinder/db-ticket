@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using dbticket;
 
 namespace db_pdftest
@@ -17,10 +13,14 @@ namespace db_pdftest
                 Console.ReadKey();
                 return;
             }
-               
-            TicketCheck tc_1 = new TicketCheck(args[0]);
-            Console.Write("Result: ");
-            Console.Write(String.Format("{0} of {1} points\n", tc_1.Result, TicketCheck.MaximumScore));
+            
+            try {
+                TicketCheck tc_1 = new TicketCheck(args[0]);
+                Console.Write("Result: ");
+                Console.Write(String.Format("{0} of {1} points\n", tc_1.Result, TicketCheck.MaximumScore));
+            } catch (InvalidFileLengthException) {
+                Console.WriteLine("The file is either too big or too large.\n");
+            }
 
             Console.WriteLine("Press a key to exit.");
             Console.ReadKey();

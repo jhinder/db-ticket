@@ -21,7 +21,7 @@ namespace dbticket
             stream.Position = offset;
             stream.Read(subsection, 0, length);
             var encodedRef = UTF8Encoding.Default.GetBytes(comparison);
-            return subsection.Equals(encodedRef);
+            return subsection.SequenceEqual(encodedRef);
         }
 
     }
