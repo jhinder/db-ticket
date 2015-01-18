@@ -11,7 +11,9 @@ namespace dbticket
 
         internal static bool HasProducerAtOffset(FileStream stream)
         {
-            return false;
+            // 1748 is the offset from EOL where the Producer string usually starts
+            long location = stream.Length - 1748;
+            return stream.ReadCompareSection(location, 32, Constants.Producer);
         }
 
     }

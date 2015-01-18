@@ -11,7 +11,7 @@ namespace dbticket
 
         internal static bool ImageHexInStream(FileStream stream)
         {
-            return false;
+            return stream.ReadCompareSection(0x1A6, 0x11, Constants.ImageHex);
         }
 
     }
