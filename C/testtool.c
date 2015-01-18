@@ -18,9 +18,9 @@ void displayResult(short value, const char *testType)
 {
 	printf("%s: ", testType);
 	if (value == 1)
-		printf("pass!");
+		printf("pass!\n");
 	else
-		printf("fail!");
+		printf("fail!\n");
 }
 
 int main(int argc, char const *argv[])
@@ -40,7 +40,7 @@ int main(int argc, char const *argv[])
 			mode = 2;
 	}
 
-	printf("File: %s\n\n", path);
+	printf("File: %s\n\n", argv[1]);
 
 	if (mode == 0) {
 		_mods(argv[1]);
@@ -93,7 +93,7 @@ void _path(const char *path)
 {
 	printf(" -- API Test (path-based) --\n");
 
-	float score = checkPDFFileByPath(argv[1]);
+	float score = checkPDFFileByPath(path);
 	if (score < 0) {
 		perror("An error occured in _path()!");
 		return;
