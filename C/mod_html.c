@@ -24,3 +24,34 @@ short trailerContainsHTML(FILE *file)
 	free(htmlBuf);
 	return tailExists;
 }
+
+// Try finding the startxref somewhere after 450K.
+// (Adobe had their reasons why an startxref + EOF ends the file...)
+
+#define SEEK_BEGIN_BLOCKS 450
+#define SEEK_BLOCK_SIZE 1000
+#define SEEK_OFFSET (SEEK_BEGIN_BLOCKS * SEEK_BLOCK_SIZE)
+
+int findXrefOffsetInMalformedFile(FILE *file)
+{
+	fseek(file, SEEK_OFFSET, SEEK_SET);
+	char *readBuffer = (char*)calloc(SEEK_BLOCK_SIZE, 1);
+	int xrefOffset = 0;
+	do {
+		fread(readBuffer, SEEK_BLOCK_SIZE, 1, file);
+		char *xrbuf = strstr(readBuffer, "startxref");
+		if (xrbuf != NULL) {
+			// we found an startxref section
+			char* number = (char*)calloc(7, 1); // don't forget extra byte for 0x00
+			strncpy(number, xrbuf+9+1, 6);
+			xrefOffset = atoi(number);
+			free(number);
+			if (xrefOffset < 400000 || xrefOffset > 525000)
+				xrefOffset = 0; // unprobable values or errors
+		}
+		// no need to advance, freadf does that already
+	} while (xrefOffset == 0 && !feof(file));
+
+	free(readBuffer);
+	return xrefOffset;
+}

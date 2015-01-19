@@ -24,6 +24,7 @@ short hasImageHexcode(FILE *file);
 
 // mod_html
 short trailerContainsHTML(FILE *file);
+int findXrefOffsetInMalformedFile(FILE *file);
 
 // mod_xref75
 int checkXrefTable(FILE *file);
