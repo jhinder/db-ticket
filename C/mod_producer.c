@@ -13,9 +13,20 @@
 #define PRODUCER_OFFSET 1748
 #define PRODUCER_CONST  "/Producer (Antenna House PDF Output Library"
 
-short producerStringPresent(FILE *file)
+short producerStringWithXrefEntries(FILE *file, int xrefEntries)
 {
-	fseek(file, -(PRODUCER_OFFSET), SEEK_END);
+	// Every xref entry is always 20 bytes long, so PRODUCER_OFFSET gets moved
+	// by 20 bytes every time there's an additional entry.
+	// (PRODUCER_OFFSET is set to 75 xref entries.)
+	
+	int newOffset = PRODUCER_OFFSET + 20*(xrefEntries-75);
+	fseek(file, -(newOffset), SEEK_END);
 	long offset = ftell(file);
 	return compareSection(file, offset, 43, PRODUCER_CONST);
+}
+
+short producerStringPresent(FILE *file)
+{
+	// It's the same result, and we avoid code duplication.
+	producerStringWithXrefEntries(file, 75);
 }
