@@ -10,6 +10,7 @@
 
 // mod_producer
 short producerStringPresent(FILE *file);
+short producerStringWithXrefEntries(FILE *file, int xrefEntries);
 
 // mod_filesize
 short hasAcceptableSize(FILE *file);

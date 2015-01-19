@@ -77,10 +77,17 @@ void _mods(const char *path)
 		displayResult(h, " -> HTML trailer");
 	}
 
+	int xRefLen = 0;
 	if (h == 0) {
 		// only possible if no HTML header misplaces the xref table
-		int xRefLen = checkXrefTable(fptr);
-		printf("xref length: %d", xRefLen);
+		xRefLen = checkXrefTable(fptr);
+		printf("xref length: %d\n", xRefLen);
+	}
+
+	short p;
+	if (!h && xRefLen != 0) {
+		p = producerStringWithXrefEntries(fptr, xRefLen);
+		displayResult(p, "Producer string with offset");
 	}
 
 	short c = hasCorrectPDFVersion(fptr);
@@ -92,7 +99,7 @@ void _mods(const char *path)
 	short e = hasImageHexcode(fptr);
 	displayResult(e, "Image hex");
 
-	printf("Score: %d out of 5\n", (a+b+c+d+e));
+	printf("Score: %d\n", (a+b+c+d+e+p));
 }
 
 // Path API testing

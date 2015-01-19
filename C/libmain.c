@@ -30,11 +30,14 @@ float checkPDFFileByFile(FILE *fptr)
 		return -2;
 
 	// Check 2: the /Producer string.
-	if (producerStringPresent(fptr)) {
+	short producerPresent = producerStringPresent(fptr);
+	short hasHTMLTail = 0;
+	if (producerPresent) {
 		scorepoints += 1.0f;
 	} else {
 		// might be a ticket with an HTML tail
-		if (trailerContainsHTML(fptr))
+		hasHTMLTail = trailerContainsHTML(fptr);
+		if (hasHTMLTail)
 			scorepoints += 0.25f;
 	}
 
@@ -47,9 +50,19 @@ float checkPDFFileByFile(FILE *fptr)
 	if (hasImageHexcode(fptr))
 		scorepoints += 2.0f;
 
-	int xRefLen = checkXrefTable(fptr);
-	if (xRefLen >= 75 && xRefLen <= 80)
-		scorepoints += 1.0f;
+	int xRefLen = 0;
+	if (!hasHTMLTail) {
+		// if it's got HTML, the xref table might be anywhere.
+		checkXrefTable(fptr);
+		if (xRefLen >= 75 && xRefLen <= 80)
+			scorepoints += 1.0f;
+	}
+
+	if (!producerPresent && !hasHTMLTail && xRefLen != 0) {
+		// might be a ticket with a weird xref offset.
+		if (producerStringWithXrefEntries(fptr, xRefLen))
+			scorepoints += 1.0f;
+	}
 
 	return scorepoints;
 
