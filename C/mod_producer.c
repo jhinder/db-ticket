@@ -28,5 +28,5 @@ short producerStringWithXrefEntries(FILE *file, int xrefEntries)
 short producerStringPresent(FILE *file)
 {
 	// It's the same result, and we avoid code duplication.
-	producerStringWithXrefEntries(file, 75);
+	return producerStringWithXrefEntries(file, 75);
 }
