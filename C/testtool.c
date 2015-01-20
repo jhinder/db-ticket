@@ -9,9 +9,11 @@
 #include "modules.h"
 #include "db-ticket.h"
 
-void _mods(const char *path);
-void _file(FILE *file);
-void _path(const char *path);
+void _mods(const char *);
+void _file(FILE *);
+void _path(const char *);
+
+void displayResult(short, const char *);
 
 // For displaying test results
 void displayResult(short value, const char *testType)
@@ -84,7 +86,7 @@ void _mods(const char *path)
 		printf("xref length: %d\n", xRefLen);
 	}
 
-	short p;
+	short p = 0;
 	if (!h && xRefLen != 0) {
 		p = producerStringWithXrefEntries(fptr, xRefLen);
 		displayResult(p, "Producer string with offset");
