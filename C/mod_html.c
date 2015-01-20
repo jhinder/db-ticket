@@ -20,7 +20,7 @@ short trailerContainsHTML(FILE *file)
 	fseek(file, -512, SEEK_END);
 	char *htmlBuf = (char*)calloc(512, 1);
 	fread(htmlBuf, 512, 1, file);
-	int tailExists = (strstr(htmlBuf, HTML_TAIL) != NULL);
+	short tailExists = (strstr(htmlBuf, HTML_TAIL) != NULL);
 	free(htmlBuf);
 	return tailExists;
 }

@@ -8,6 +8,6 @@
 
 #include <stdio.h>
 
-short compareSection(FILE *file, long offset, int length, const char *comparison);
+short compareSection(FILE *file, long offset, size_t length, const char *comparison);
 
 #endif

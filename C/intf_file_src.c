@@ -9,9 +9,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "intf_file_src.h"
 
 // This code is used all the time, so it seemed like a good idea to separate it.
-short compareSection(FILE *file, long offset, int length, const char *comparison)
+short compareSection(FILE *file, long offset, size_t length, const char *comparison)
 {
 	fseek(file, offset, SEEK_SET);
 	char *buf = (char*)calloc(length, 1);
