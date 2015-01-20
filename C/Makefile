@@ -1,20 +1,20 @@
 CC=gcc
-CFLAGS=-O3
+#CC=clang # enable if you want (and have clang installed)
+CFLAGS=-O3 -std=c99
 
-all: testtool
+all: library testtool
 
-testtool:
-	$(CC) -o testtool testtool.c libmain.c intf_file_src.c mod_*.c
+testtool: library
+	$(CC) $(CFLAGS) -c testtool.c
+	$(CC) -L . -o testtool testtool.o -ldbticket
 
-dynamic:
-	$(CC) $(CFLAGS) -c -fpic libmain.c intf_file_src.c mod_*.c
-	$(CC) -shared -o libdbticket.so libmain.o intf_file_src.o mod_*.o
+library: .modules
+	$(CC) $(CFLAGS) -c -fpic libmain.c
+	$(CC) -shared -o libdbticket libmain.o mod_*.o intf_*.o
+
+.modules:
+	$(CC) $(CFLAGS) -c -fpic mod_*.c intf_*.c
+
+clean:
+	rm testtool libdbticket
 	rm *.o
-
-clean-testtool:
-	rm testtool
-
-clean-dynamic:
-	rm libdbticket.so
-
-clean: clean-testtool clean-dynamic
