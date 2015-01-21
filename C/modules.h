@@ -33,4 +33,7 @@ int checkXrefTable(FILE *file);
 // mod_trailer
 int * readXrefTable(FILE *file, int *count);
 
+// mod_travelinfo
+char * getRawTravelStream(FILE *file, int streamOffset, int lengthOffset);
+
 #endif
