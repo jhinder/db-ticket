@@ -17,7 +17,7 @@
  * the recommended section order, so we'll rely on it.
  */
 
-int * fillXrefTable(FILE *file, int *entryCount)
+int * readXrefTable(FILE *file, int *entryCount)
 {
 	// TODO Deal with these damn HTML appendices.
 	int xrefStart = getXrefLocation(file) + 5; // skips "xref\n"

@@ -31,6 +31,6 @@ int getXrefLocation(FILE *file);
 int checkXrefTable(FILE *file);
 
 // mod_trailer
-int * fillXrefTable(FILE *file, int *count);
+int * readXrefTable(FILE *file, int *count);
 
 #endif
