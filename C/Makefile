@@ -15,6 +15,12 @@ library: .modules
 .modules:
 	$(CC) $(CFLAGS) -c -fpic mod_*.c intf_*.c
 
+libdarwin: library
+	mv libdbticket libdbticket.dylib
+
+libunix: library
+	mv libdbticket libdbticket.so
+
 clean:
 	rm testtool libdbticket
 	rm *.o

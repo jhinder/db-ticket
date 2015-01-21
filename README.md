@@ -6,7 +6,7 @@ Please note that this library can't read the actual information on the ticket.
 ## Languages and platforms
 The library is written in standard C (C99), using only libc; therefore it could and should run on many platforms.
 
-Documentation on API usage and sample code can be found in `Documentation.md`.
+Information about compilation and usage of the API can be found in `Documentation.md`.
 
 ## Testing
 Rail tickets are expensive, and I can only do so many trips per year. This means that my collection of rail tickets is rather limited. If you happen to have more of them, please test them, and report if there are any unreadable tickets. (Unreadable means an API test score of 50% or less, tested on an officially issued DB ticket.)  

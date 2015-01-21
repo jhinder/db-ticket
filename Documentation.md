@@ -9,6 +9,9 @@ Found in the `C` directory. Development happens on the `stdc` branch.
 Execute `make` in the `C` directory. This builds both the test tool and the library (calling `make testtool` has the same effect).  
 You can also run `make library` to only create a dynamic library; this file does not have an extension and you may need to give it an extension (often this is `.so` for Linux and `.dylib` for Mac OS X).
 
+There are two special targets: `libdarwin` (creates a .dylib file) and `libunix` (creates a .so file).  
+(I'm not exactly happy with this setup, but it has to work for the moment.)
+
 *Note:* the test tool dynamically links `libdbticket` without extension; if you rename it, most likely the test tool will not run.
 
 #### Windows/Visual Studio
