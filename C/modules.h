@@ -27,6 +27,7 @@ short trailerContainsHTML(FILE *file);
 int findXrefOffsetInMalformedFile(FILE *file);
 
 // mod_xref75
+int getXrefLocation(FILE *file);
 int checkXrefTable(FILE *file);
 
 #endif
