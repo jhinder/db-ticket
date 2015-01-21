@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "modules.h"
+
 /* Some tickets contain HTML at the end. This confuses mod_producer.
  * HTML at the end can replace the producer string if the rest of the
  * criteria is met.
@@ -44,7 +46,7 @@ int findXrefOffsetInMalformedFile(FILE *file)
 			// we found an startxref section
 			char* number = (char*)calloc(7, 1); // don't forget extra byte for 0x00
 			strncpy(number, xrbuf+9+1, 6);
-			xrefOffset = atoi(number);
+			xrefOffset = (int)strtol(number, (char **)NULL, 10);
 			free(number);
 			if (xrefOffset < 400000 || xrefOffset > 525000)
 				xrefOffset = 0; // unprobable values or errors

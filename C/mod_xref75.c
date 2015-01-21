@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "modules.h"
+
 #define STARTXREF_OFFSET 24
 #define STARTXREF "startxref"
 
@@ -29,7 +31,7 @@ int getXrefLocation(FILE *file)
 		memset(xrefBuf, 0x00, 8);
 		fseek(file, 1, SEEK_CUR);
 		fread(xrefBuf, 6, 1, file);
-		result = atoi(xrefBuf);
+		result = (int)strtol(xrefBuf, (char **)NULL, 10);
 	}
 	free(xrefBuf);
 	return result;
@@ -43,5 +45,5 @@ int checkXrefTable(FILE *file)
 	fseek(file, (location+7), SEEK_SET); // skip the "xref \0A 0 \20"
 	char result[2];
 	fread(result, 2, 1, file);
-	return atoi(result);
+	return (int)strtol(result, (char **)NULL, 10);
 }
