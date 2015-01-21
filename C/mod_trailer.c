@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "modules.h"
 
@@ -18,7 +17,7 @@
  * the recommended section order, so we'll rely on it.
  */
 
-void fillXrefTable(FILE *file)
+int * fillXrefTable(FILE *file, int *entryCount)
 {
 	// TODO Deal with these damn HTML appendices.
 	int xrefStart = getXrefLocation(file) + 5; // skips "xref\n"
@@ -26,25 +25,24 @@ void fillXrefTable(FILE *file)
 	char nums[6];
 	fread(nums, 5, 1, file);
 	nums[5] = '\0';
-	printf("%s", nums);
+
 	int start, count;
 	sscanf(nums, "%d %d\x0a", &start, &count);
-	if (start == 0 && count == 0) {
-		/*Error -- later*/
-	}
-	
-	printf("%d entries starting at %d\n", count, start);
+	if (start == 0 && count == 0)
+		return NULL;
 
-	int offsets[count];
+	int *offsets = (int *)calloc(count, sizeof(int));
 	char nextEntry[20]; // Xref entrys are ALWAYS 20 bytes
+	int offset, generation;
+	char usageFlag;
 	for (int i=0; i<count; i++) {
 		fread(nextEntry, 20, 1, file);
 		// We don't care about generation and free/used flag
-		sscanf(nextEntry, "%d", &(offsets[i]));
+		sscanf(nextEntry, "%d %d %c", &offset, &generation, &usageFlag);
+		if (usageFlag == 'n') // free entries confuse everything
+			offsets[i] = offset;
 	}
 
-	// Test: display the whole table
-	for (int i=0; i<count; i++)
-		printf("obj %d 0 R\toffset %d\n", i, offsets[i]);
-
+	*entryCount = count;
+	return offsets;
 }
