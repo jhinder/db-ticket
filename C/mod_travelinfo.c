@@ -19,27 +19,26 @@
  * Please take the values from the xref table. No guesses here!
  */
 
-char * getRawTravelStream(FILE *file, int streamOffset, int lengthOffset)
+int getTravelStreamLength(FILE *file, int offset)
 {
-	if (file == NULL || streamOffset == 0 || lengthOffset == 0)
-		return NULL;
-
-	// Step 1: skip to the length offset and get that first.
-	fseek(file, lengthOffset, SEEK_SET);
+	fseek(file, offset, SEEK_SET);
 	char *readBuf = (char *)calloc(24, 1);
 	fread(readBuf, 23, 1, file);
 	int streamLength;
-	sscanf(readBuf, "34 0 obj\x0a%d\x0aendobj", streamLength);
+	sscanf(readBuf, "34 0 obj\x0a%d\x0aendobj", &streamLength);
 	free(readBuf);
+	return streamLength;
+}
 
-	if (streamLength == 0)
-		return NULL; // error handling? no idea
+void * getRawTravelStream(FILE *file, int streamOffset, int streamLength)
+{
+	if (file == NULL || streamOffset == 0)
+		return NULL;
 
-	fseek(file, streamOffset+(0x38), SEEK_SET); // move to start of stream
-	char *wholeStream = (char *)calloc(streamLength, 1);
-	fread(wholeStream, streamLength, 1, file);
-	// Yes, it's a 4-6 kB block most of the time. We can handle that in 2015.
-
+	fseek(file, streamOffset+(0x39), SEEK_SET); // move to start of stream
+	void *wholeStream = malloc(streamLength);
+	size_t readBytes = fread(wholeStream, 1, streamLength, file);
+	if (readBytes != streamLength)
+		return NULL; // maybe some error handling
 	return wholeStream;
-
 }
