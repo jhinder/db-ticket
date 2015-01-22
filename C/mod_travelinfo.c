@@ -7,7 +7,8 @@
 #include <stdlib.h>
 
 #include "modules.h"
-#include "tinfl.h"
+
+void *tinfl_decompress_mem_to_heap(const void *pSrc_buf, size_t src_buf_len, size_t *pOut_len, int flags);
 
 /* Okay, so much for "can't read information on the ticket".
  * We can, we just didn't choose to.
