@@ -14,3 +14,6 @@ If you find bugs, or want to submit own code, open an issue or send me a pull re
 
 ## Licence
 The code is licenced under a MIT licence (see LICENSE.md for details).
+
+## Acknowledgements
+This library uses code from the [miniz library](https://code.google.com/p/miniz/) for stream inflation. The code was published under the public domain.
