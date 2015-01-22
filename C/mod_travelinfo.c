@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "modules.h"
+#include "tinfl.h"
 
 /* Okay, so much for "can't read information on the ticket".
  * We can, we just didn't choose to.
@@ -30,7 +31,17 @@ int getTravelStreamLength(FILE *file, int offset)
 	return streamLength;
 }
 
-void * getRawTravelStream(FILE *file, int streamOffset, int streamLength)
+void * createInflatedStream(void *data, int streamLength)
+{
+	size_t inflate;
+	void *inflatedData = tinfl_decompress_mem_to_heap(data, streamLength, &inflate, 1);
+	free(data);
+	if (inflate <= 2)
+		data = NULL; // some error.
+	return inflatedData;
+}
+
+void * getTravelStream(FILE *file, int streamOffset, int streamLength)
 {
 	if (file == NULL || streamOffset == 0)
 		return NULL;
@@ -40,5 +51,7 @@ void * getRawTravelStream(FILE *file, int streamOffset, int streamLength)
 	size_t readBytes = fread(wholeStream, 1, streamLength, file);
 	if (readBytes != streamLength)
 		return NULL; // maybe some error handling
-	return wholeStream;
+
+	return createInflatedStream(wholeStream, streamLength);
+	//return wholeStream;
 }
