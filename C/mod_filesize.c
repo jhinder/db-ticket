@@ -5,14 +5,18 @@
 
 #include <stdio.h>
 
-/* The file size is another very good indicator, as both tickets and seat
+#include "modules.h"
+
+/* The file size is a quite good indicator, as both tickets and seat
  * reservations share some similarities. A valid ticket file is around
- * 500 kB (500 000 bytes), but no more than 600 kB; to be honest, the largest
- * ticket I encountered was 525 kB.
+ * 500 kB (500 000 bytes), but no more than 600 kB. The smallest recent
+ * ticket used while testing was 438 kB in size.
+ * Note that some older tickets (from before 2010) are only ~15 kB in size.
+ * We won't handle those here; this library is designed for recent tickets.
  */
 
-#define MIN_SIZE 500000
-#define MAX_SIZE 550000
+#define MIN_SIZE 400000 // 400 kB
+#define MAX_SIZE 600000 // 600 kB
 
 short hasAcceptableSize(FILE *file)
 {
