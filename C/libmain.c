@@ -13,7 +13,9 @@ float checkPDFFileByPath(const char *filename)
 	if (fptr == NULL)
 		return -1;
 	
-	return checkPDFFileByFile(fptr);
+	float retVal = checkPDFFileByFile(fptr);
+	fclose(fptr);
+	return retVal;
 }
 
 float checkPDFFileByFile(FILE *fptr)

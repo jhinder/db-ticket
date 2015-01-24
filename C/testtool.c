@@ -49,6 +49,7 @@ int main(int argc, char const *argv[])
 	} else if (mode == 1) {
 		FILE *fptr = fopen(argv[1], "rb");
 		_file(fptr);
+		fclose(fptr);
 	} else if (mode == 2) {
 		_path(argv[1]);
 	}
@@ -102,6 +103,8 @@ void _mods(const char *path)
 	displayResult(e, "Image hex");
 
 	printf("Score: %d\n", (a+b+c+d+e+p));
+
+	fclose(fptr);
 }
 
 // Path API testing
