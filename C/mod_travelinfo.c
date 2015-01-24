@@ -116,6 +116,8 @@ struct trip_information parseTravelStream(char *block)
 	else if (strcmp(nWayString, "ab ") == 0)
 		trips = 1;
 
+	// TODO Check for trips == 1, also in regression
+
 	// 2.1 Get travel years. This is only relevant for multiyear-trips.
 	unsigned int abYear, baYear;
 	if (trips == 1) {
@@ -124,9 +126,61 @@ struct trip_information parseTravelStream(char *block)
 		sscanf(lines[4], "Hinfahrt ab %*d.%*d.%d, R%*cckfahrt ab %*d.%*d.%d",
 			&abYear, &baYear);
 	}
+
+	// 3: Determine trip termini.
+
+	// First leg.
+	lineIndex = 5; // Yay, variable reusal!
+	while (strcmp(lines[lineIndex], "Hinfahrt:") != 0)
+		lineIndex++;
+	char *startCity = stripCityTicket(lines[lineIndex+1]);
+	char *endCity = stripCityTicket(lines[lineIndex+2]);
+	if (endCity[0] == ' ')
+		endCity = (endCity+1); // strip space
+	// TODO Umlaut restoring
+
+	lineIndex += 3;
+
+	// 3.1: Return trip termini, if applicable
+	char *returnStartCity, *returnEndCity;
+	if (trips == 2) {
+		// Find and read the return trip
+		// TODO Replace ? with \200, because of local encoding bug
+		while (strcmp(lines[lineIndex], "R?ckfahrt:") != 0)
+			lineIndex++;
+		// Same procedure as above; sorry about the code duplication!
+		returnStartCity = stripCityTicket(lines[lineIndex+1]);
+		returnEndCity = stripCityTicket(lines[lineIndex+2]);
+		if (returnEndCity[0] == ' ')
+			returnEndCity = (returnEndCity+1);
+
+		lineIndex += 3;
+	}
+
+	// 4: Ticket prices. All prices are given in Euro (EUR), btw.
+	while (strcmp(lines[lineIndex], "Betrag") != 0)
+		lineIndex++;
+	char* total = lines[lineIndex+1];
+	int euro, cent;
+	sscanf(total, "%d,%d%*c", &euro, &cent);
+	double price = euro + ((double)cent * 0.01);
+
+	// 4.1 Payment method
+	payment_method paymentType;
+	char payment[5] = {0, 0, 0, 0, 0};
+	strncpy(payment, lines[lineIndex-1], 4);
+	if (strcmp(payment, "Kred") == 0)
+		paymentType = CREDIT_CARD;
+	else if (strcmp(payment, "Last") == 0)
+		paymentType = DIRECT_DEBIT;
+	else if (strcmp(payment, "PayP") == 0)
+		paymentType = OTHER_PAYMENT;
+	else
+		paymentType = OTHER_PAYMENT;
+
 }
 
-// Strips the "+City" from station names. The input is altered.
+// Strips the "+City" from station names.
 char * stripCityTicket(char *station)
 {
 	char *lastPlus = strrchr(station, '+');
