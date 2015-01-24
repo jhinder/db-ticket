@@ -1,7 +1,5 @@
 # db-ticket
-db-ticket is a little library to check whether a given PDF file is a valid online ticket issued by [Deutsche Bahn](http://bahn.de/).
-
-Please note that this library can't read the actual information on the ticket.
+db-ticket is a little library to inspect digital ticket PDF files issued by [Deutsche Bahn](http://bahn.de/).
 
 ## Languages and platforms
 The library is written in standard C (C99), using only libc; therefore it could and should run on many platforms.
