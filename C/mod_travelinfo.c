@@ -5,15 +5,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "modules.h"
+//#include "traveldata.h"
 
+// Forward declaration for tinfl.c
 void *tinfl_decompress_mem_to_heap(const void *pSrc_buf, size_t src_buf_len, size_t *pOut_len, int flags);
-
-/* Okay, so much for "can't read information on the ticket".
- * We can, we just didn't choose to.
- * This requires an Deflate decoder. I'll write one later (hopefully).
- */
 
 /* What we need to know:
  * The actual stream is always obj 4 0, and Flate-encoded.
@@ -55,4 +53,38 @@ void * getTravelStream(FILE *file, int streamOffset, int streamLength)
 
 	return createInflatedStream(wholeStream, streamLength);
 	//return wholeStream;
+}
+
+// Now comes the fun part: actually parsing the (now decoded) text stream.
+// Warning: this function destroys the input parameter.
+
+#define SEEK_BLOCK_CR() strchr(block, '\n')
+
+struct trip_information parseTravelStream(char *block)
+{
+	// First, set up all variables and storage
+	char **lines = (char **)malloc(256 * sizeof(char*));
+	for (int i=0; i<256; i++)
+		lines[i] = calloc(512, 1);
+	// 512b*256b = 131 kB -- we can still reduce this if less is enough
+	unsigned int lineIndex = 0;
+
+	long loc;
+	char *cr = SEEK_BLOCK_CR();
+	while (cr != NULL)
+	{
+		loc = cr - block + 1; // get location of \n
+		if (block[0] == '(' && block[1] != '-') {
+			// Every string line ends with ") Tj\n"
+			// Also, we can skip the '(' at the start of the line
+			memcpy(lines[lineIndex], block+1, loc-6);
+			lineIndex++;
+		}
+
+		block = (block + loc); // Move block pointer beyond \n
+		cr = SEEK_BLOCK_CR();
+	}
+
+	// At this point, the entire PDF string array is inside lines.
+	// Let's get to parsing.
 }
