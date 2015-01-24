@@ -10,6 +10,7 @@ typedef enum train_t
 {
 	ICE,
 	IC_EC,
+	LOCAL_TRAIN,
 	OTHER_TRAIN
 } train_type;
 
@@ -17,6 +18,7 @@ typedef enum payment_t
 {
 	EC_CARD,
 	CREDIT_CARD,
+	DIRECT_DEBIT,
 	OTHER_PAYMENT
 } payment_method;
 
