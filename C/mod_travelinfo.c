@@ -59,7 +59,9 @@ void * getTravelStream(FILE *file, int streamOffset, int streamLength)
 
 // Now comes the fun part: actually parsing the (now decoded) text stream.
 
+// Yes, the missing semicolons are intended.
 #define SEEK_BLOCK_CR() strchr(block, '\n')
+#define READ_UNTIL_FOUND(s) while (strcmp(lines[lineIndex], s) != 0) lineIndex++
 
 // Warning: this function destroys the input parameter.
 struct trip_information parseTravelStream(char *block)
@@ -131,8 +133,7 @@ struct trip_information parseTravelStream(char *block)
 
 	// First leg.
 	lineIndex = 5; // Yay, variable reusal!
-	while (strcmp(lines[lineIndex], "Hinfahrt:") != 0)
-		lineIndex++;
+	READ_UNTIL_FOUND("Hinfahrt:")
 	char *startCity = stripCityTicket(lines[lineIndex+1]);
 	char *endCity = stripCityTicket(lines[lineIndex+2]);
 	if (endCity[0] == ' ')
@@ -146,8 +147,7 @@ struct trip_information parseTravelStream(char *block)
 	if (trips == 2) {
 		// Find and read the return trip
 		// TODO Replace ? with \200, because of local encoding bug
-		while (strcmp(lines[lineIndex], "R?ckfahrt:") != 0)
-			lineIndex++;
+		READ_UNTIL_FOUND("R?ckfahrt:")
 		// Same procedure as above; sorry about the code duplication!
 		returnStartCity = stripCityTicket(lines[lineIndex+1]);
 		returnEndCity = stripCityTicket(lines[lineIndex+2]);
@@ -158,8 +158,7 @@ struct trip_information parseTravelStream(char *block)
 	}
 
 	// 4: Ticket prices. All prices are given in Euro (EUR), btw.
-	while (strcmp(lines[lineIndex], "Betrag") != 0)
-		lineIndex++;
+	READ_UNTIL_FOUND("Betrag")
 	char* total = lines[lineIndex+1];
 	int euro, cent;
 	sscanf(total, "%d,%d%*c", &euro, &cent);
@@ -177,6 +176,11 @@ struct trip_information parseTravelStream(char *block)
 		paymentType = OTHER_PAYMENT;
 	else
 		paymentType = OTHER_PAYMENT;
+
+	// 5: Booking ID
+	READ_UNTIL_FOUND("Auftragsnummer:")
+	char bookingId[7];
+	strncpy(bookingId, lines[lineIndex+1], 6); // That was easy.
 
 }
 

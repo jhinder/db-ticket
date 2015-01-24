@@ -31,6 +31,7 @@ struct travel_information
 
 struct trip_information
 {
+	char *bookingID;
 	train_type train;
 	float price;
 	payment_method payment;
