@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "modules.h"
-//#include "traveldata.h"
+#include "traveldata.h"
 
 // Forward declaration for tinfl.c
 void *tinfl_decompress_mem_to_heap(const void *pSrc_buf, size_t src_buf_len, size_t *pOut_len, int flags);
