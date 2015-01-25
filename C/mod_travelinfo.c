@@ -189,7 +189,38 @@ struct trip_information parseTravelStream(char *block)
 	 * me to write an extraction block.)
 	 */
 
-	// => ACTUAL CODE WILL COME SOON
+	READ_UNTIL_FOUND("Reservierung");
+	short stop = 0;
+	
+	char *store;
+	do {
+		char *startStation = lines[lineIndex+1];
+		int dDay, dMonth;
+		sscanf(lines[lineIndex+2], "%d.%d.", &dDay, &dMonth);
+		int dHour, dMinute;
+		sscanf(lines[lineIndex+3], "ab %d:%d", &dHour, &dMinute);
+		char *startPlatform = lines[lineIndex+4];
+		char *stopStation = lines[lineIndex+5];
+		store = stopStation; // cache it
+		int aDay, aMonth;
+		sscanf(lines[lineIndex+6], "%d.%d.", &aDay, &aMonth);
+		int aHour, aMinute;
+		sscanf(lines[lineIndex+7], "an %d:%d", &aHour, &aMinute);
+		char *stopPlatform = lines[lineIndex+8];
+		char *trainIdentifier = lines[lineIndex+9];
+
+		size_t eCityLen = strlen(endCity);
+		if (eCityLen >= strlen(stopStation)
+			&& strncmp(endCity, stopStation, eCityLen) == 0) {
+			// found the end
+			stop = 1;
+		} else {
+			lineIndex += 9;
+			READ_UNTIL_FOUND(store);
+			lineIndex--;
+		}
+		
+	} while (!stop);
 
 	// After this, there is nothing to parse.
 	// Let's construct the returning struct.
