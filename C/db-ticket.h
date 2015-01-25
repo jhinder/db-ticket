@@ -20,6 +20,6 @@
 float checkPDFFileByFile(FILE *file);
 float checkPDFFileByPath(const char *filename);
 
-int readDataFromTicket(FILE *file, struct travel_information *target);
+struct trip_information * readDataFromTicket(FILE *file);
 
 #endif

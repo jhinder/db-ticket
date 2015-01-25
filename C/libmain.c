@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "modules.h"
 #include "db-ticket.h"
 
@@ -69,3 +70,19 @@ float checkPDFFileByFile(FILE *fptr)
 	return scorepoints;
 
 }
+
+struct trip_information * readDataFromTicket(FILE *file)
+{
+	int entryCount;
+	int *xrefTable = readXrefTable(file, &entryCount);
+	if (entryCount < 35)
+		return NULL;
+	int obj4_0 = xrefTable[4];
+	int obj34_0 = xrefTable[34];
+	int streamLen = getTravelStreamLength(file, obj34_0);
+	void *stream = getTravelStream(file, obj4_0, streamLen);
+	struct trip_information *trip = malloc(sizeof(struct trip_information));
+	*trip = parseTravelStream((char *)stream);
+	return trip;
+}
+
