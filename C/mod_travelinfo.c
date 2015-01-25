@@ -189,64 +189,81 @@ struct trip_information parseTravelStream(char *block)
 	 * me to write an extraction block.)
 	 */
 
-	READ_UNTIL_FOUND("Reservierung");
-	short stop = 0;
-	
-	char *store;
-	do {
-		char *startStation = lines[lineIndex+1];
-		int dDay, dMonth;
-		sscanf(lines[lineIndex+2], "%d.%d.", &dDay, &dMonth);
-		int dHour, dMinute;
-		sscanf(lines[lineIndex+3], "ab %d:%d", &dHour, &dMinute);
-		char *startPlatform = lines[lineIndex+4];
-		char *stopStation = lines[lineIndex+5];
-		store = stopStation; // cache it
-		int aDay, aMonth;
-		sscanf(lines[lineIndex+6], "%d.%d.", &aDay, &aMonth);
-		int aHour, aMinute;
-		sscanf(lines[lineIndex+7], "an %d:%d", &aHour, &aMinute);
-		char *stopPlatform = lines[lineIndex+8];
-		char *trainIdentifier = lines[lineIndex+9];
+	struct itinerary_section *itineraries[2] = {NULL, NULL};
 
-		size_t eCityLen = strlen(endCity);
-		if (eCityLen >= strlen(stopStation)
-			&& strncmp(endCity, stopStation, eCityLen) == 0) {
-			// found the end
-			stop = 1;
-		} else {
-			lineIndex += 9;
-			READ_UNTIL_FOUND(store);
-			lineIndex--;
-		}
-		
-	} while (!stop);
+	for (int i=0; i<trips; i++) {
+		READ_UNTIL_FOUND("Reservierung");
+
+		short stop = 0;
+		char *store;
+		struct itinerary_section *startSection, *currentSection;
+
+		do {
+			char *startStation = lines[lineIndex+1];
+			int dDay, dMonth;
+			sscanf(lines[lineIndex+2], "%d.%d.", &dDay, &dMonth);
+			int dHour, dMinute;
+			sscanf(lines[lineIndex+3], "ab %d:%d", &dHour, &dMinute);
+			char *startPlatform = lines[lineIndex+4];
+			char *stopStation = lines[lineIndex+5];
+			store = stopStation; // cache it
+			int aDay, aMonth;
+			sscanf(lines[lineIndex+6], "%d.%d.", &aDay, &aMonth);
+			int aHour, aMinute;
+			sscanf(lines[lineIndex+7], "an %d:%d", &aHour, &aMinute);
+			char *stopPlatform = lines[lineIndex+8];
+			char *trainIdentifier = lines[lineIndex+9];
+
+			struct itinerary_section nextStore = {
+				.start = startStation,
+				.destination = stopStation,
+				.startPlatform = startPlatform,
+				.destinationPlatform = stopPlatform,
+				.trainIdentifier = trainIdentifier,
+				.departureTime = (dHour * 100) + dMinute,
+				.arrivalTime = (aHour * 100) + aMinute,
+				.departureDate = (dMonth * 100) + dDay,
+				.arrivalDate = (aMonth * 100) + aDay,
+				.nextSection = NULL
+			};
+
+			struct itinerary_section *nextSection = &nextStore;
+
+			if (startSection == NULL) {
+				// set first element
+				startSection = nextSection;
+				currentSection = startSection;
+			} else {
+				// append struct and move on
+				currentSection->nextSection = nextSection;
+				currentSection = currentSection->nextSection;
+			}
+
+			size_t eCityLen = strlen(endCity);
+			if (eCityLen >= strlen(stopStation) && strncmp(endCity, stopStation, eCityLen) == 0) {
+				stop = 1;
+			} else {
+				lineIndex += 9;
+				READ_UNTIL_FOUND(store);
+				lineIndex--;
+			}
+			
+		} while (!stop);
+
+		// Assign head of list to appropriate array index
+		itineraries[i] = startSection;
+	}
 
 	// After this, there is nothing to parse.
 	// Let's construct the returning struct.
-
-	struct travel_information tripAB = {
-		.origin = startCity,
-		.destination = endCity
-		//unsigned int departureDate, arrivalDate;
-		//unsigned int departureTime, arrivalTime;
-	};
-
-	struct travel_information tripBA;
-	if (trips == 2) {
-		tripBA = (struct travel_information) {
-			.origin = returnStartCity,
-			.destination = returnEndCity
-		};
-	}
 
 	struct trip_information trip = {
 		.bookingID = bookingId,
 		.train = ticketType,
 		.price = price,
 		.payment = paymentType,
-		.firstLeg = tripAB,
-		.secondLeg = tripBA
+		.trip_ab = itineraries[0],
+		.trip_ba = itineraries[1]
 	};
 
 	return trip;

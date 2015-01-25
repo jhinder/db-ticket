@@ -22,11 +22,15 @@ typedef enum payment_t
 	OTHER_PAYMENT
 } payment_method;
 
-struct travel_information
+// This serves as sort of a simple linked list.
+struct itinerary_section
 {
-	char *origin, *destination;
+	char *start, *destination;
+	char *startPlatform, *destinationPlatform;
+	char *trainIdentifier;
 	unsigned int departureDate, arrivalDate;
 	unsigned int departureTime, arrivalTime;
+	struct itinerary_section *nextSection;
 };
 
 struct trip_information
@@ -35,7 +39,7 @@ struct trip_information
 	train_type train;
 	double price;
 	payment_method payment;
-	struct travel_information firstLeg, secondLeg;
+	struct itinerary_section *trip_ab, *trip_ba;
 };
 
 #endif
