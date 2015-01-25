@@ -33,7 +33,7 @@ struct trip_information
 {
 	char *bookingID;
 	train_type train;
-	float price;
+	double price;
 	payment_method payment;
 	struct travel_information firstLeg, secondLeg;
 };

@@ -32,13 +32,14 @@ int getTravelStreamLength(FILE *file, int offset)
 	return streamLength;
 }
 
+// Check for return value of NULL; in that case, abort all reading
 void * createInflatedStream(void *data, int streamLength)
 {
 	size_t inflate;
 	void *inflatedData = tinfl_decompress_mem_to_heap(data, streamLength, &inflate, 1);
 	free(data);
 	if (inflate <= 2)
-		data = NULL; // some error.
+		inflatedData = NULL; // some error.
 	return inflatedData;
 }
 
@@ -133,7 +134,7 @@ struct trip_information parseTravelStream(char *block)
 
 	// First leg.
 	lineIndex = 5; // Yay, variable reusal!
-	READ_UNTIL_FOUND("Hinfahrt:")
+	READ_UNTIL_FOUND("Hinfahrt:");
 	char *startCity = stripCityTicket(lines[lineIndex+1]);
 	char *endCity = stripCityTicket(lines[lineIndex+2]);
 	if (endCity[0] == ' ')
@@ -147,7 +148,7 @@ struct trip_information parseTravelStream(char *block)
 	if (trips == 2) {
 		// Find and read the return trip
 		// TODO Replace ? with \200, because of local encoding bug
-		READ_UNTIL_FOUND("R?ckfahrt:")
+		READ_UNTIL_FOUND("R?ckfahrt:");
 		// Same procedure as above; sorry about the code duplication!
 		returnStartCity = stripCityTicket(lines[lineIndex+1]);
 		returnEndCity = stripCityTicket(lines[lineIndex+2]);
@@ -158,7 +159,7 @@ struct trip_information parseTravelStream(char *block)
 	}
 
 	// 4: Ticket prices. All prices are given in Euro (EUR), btw.
-	READ_UNTIL_FOUND("Betrag")
+	READ_UNTIL_FOUND("Betrag");
 	char* total = lines[lineIndex+1];
 	int euro, cent;
 	sscanf(total, "%d,%d%*c", &euro, &cent);
@@ -178,9 +179,46 @@ struct trip_information parseTravelStream(char *block)
 		paymentType = OTHER_PAYMENT;
 
 	// 5: Booking ID
-	READ_UNTIL_FOUND("Auftragsnummer:")
+	READ_UNTIL_FOUND("Auftragsnummer:");
 	char bookingId[7];
 	strncpy(bookingId, lines[lineIndex+1], 6); // That was easy.
+
+	// 6: Travel schedule.
+	/* This is probably the hardest part to decode. (The data still follows
+	 * a certain format, it was just harder to find a pattern that allowed
+	 * me to write an extraction block.)
+	 */
+
+	// => ACTUAL CODE WILL COME SOON
+
+	// After this, there is nothing to parse.
+	// Let's construct the returning struct.
+
+	struct travel_information tripAB = {
+		.origin = startCity,
+		.destination = endCity
+		//unsigned int departureDate, arrivalDate;
+		//unsigned int departureTime, arrivalTime;
+	};
+
+	struct travel_information tripBA;
+	if (trips == 2) {
+		tripBA = (struct travel_information) {
+			.origin = returnStartCity,
+			.destination = returnEndCity
+		};
+	}
+
+	struct trip_information trip = {
+		.bookingID = bookingId,
+		.train = ticketType,
+		.price = price,
+		.payment = paymentType,
+		.firstLeg = tripAB,
+		.secondLeg = tripBA
+	};
+
+	return trip;
 
 }
 
