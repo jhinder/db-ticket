@@ -281,7 +281,7 @@ char ** extractTextObjectsFromStream(char *block)
 			// Yay!
 			head += 2; // Skips m and the opening parenthesis
 			int parenthesesCount = 0;
-			char *membuf = (char*) malloc(1024);
+			char *membuf = (char*) calloc(1, 1024);
 			// 1k per iteration should be enough.
 			int subIndex = 0;
 			do {
@@ -289,8 +289,11 @@ char ** extractTextObjectsFromStream(char *block)
 
 				if (nextChar == '(')
 					parenthesesCount++;
-				else if (nextChar == ')')
+				else if (nextChar == ')') {
 					parenthesesCount--;
+					if (parenthesesCount == 0) // skip the closing bracket
+						break;
+				}
 
 				membuf[subIndex] = nextChar;
 
@@ -307,13 +310,19 @@ char ** extractTextObjectsFromStream(char *block)
 
 				subIndex++;
 			} while (parenthesesCount > 0);
+
 			membuf[subIndex + 1] = '\0';
-			membuf = (char*) realloc(membuf, (strlen(membuf) + 1));
-			//printf("-> %s\n", membuf);
-			if (membuf[1] != '-') {
+			membuf = (char*) realloc(membuf, strlen(membuf));
+			membuf = (membuf + 1); // Remove opening bracket
+
+			if (membuf[0] != '-') {
+				//printf("%s\n", membuf);
 				lines[lineIndex] = membuf;
 				lineIndex++;	
 			}
+
+			// Don't free membuf here, we need it on the heap!
+
 			head = strstr((head + subIndex), "Tj"); // jump to text print
 		} else {
 			head++;
