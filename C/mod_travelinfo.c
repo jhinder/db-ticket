@@ -43,7 +43,7 @@ void * createInflatedStream(void *data, int streamLength)
 	return inflatedData;
 }
 
-void * getTravelStream(FILE *file, int streamOffset, int streamLength)
+char * getTravelStream(FILE *file, int streamOffset, int streamLength)
 {
 	if (file == NULL || streamOffset == 0)
 		return NULL;
@@ -54,48 +54,21 @@ void * getTravelStream(FILE *file, int streamOffset, int streamLength)
 	if (readBytes != streamLength)
 		return NULL; // maybe some error handling
 
-	return createInflatedStream(wholeStream, streamLength);
+	return (char*)createInflatedStream(wholeStream, streamLength);
 	//return wholeStream;
 }
 
-// Now comes the fun part: actually parsing the (now decoded) text stream.
-
 // Yes, the missing semicolons are intended.
-#define SEEK_BLOCK_CR() strchr(block, '\n')
+#define SEEK_BLOCK_CR() strchr(block, '\x0a')
 #define READ_UNTIL_FOUND(s) while (strcmp(lines[lineIndex], s) != 0) lineIndex++
 
 // Warning: this function destroys the input parameter.
 struct trip_information parseTravelStream(char *block)
 {
-	// First, set up all variables and storage
-	char **lines = (char **)malloc(256 * sizeof(char*));
-	for (int i=0; i<256; i++)
-		lines[i] = calloc(512, 1);
-	// 512b*256b = 131 kB -- we can still reduce this if less is enough
-	unsigned int lineIndex = 0;
+	// All strings as a char* array.
+	char **lines = extractTextObjectsFromStream(block);
 
-	long loc;
-	char *cr = SEEK_BLOCK_CR();
-	while (cr != NULL)
-	{
-		loc = cr - block + 1; // get location of \n
-		if (block[0] == '(' && block[1] != '-') {
-			// Every string line ends with ") Tj\n"
-			// Also, we can skip the '(' at the start of the line
-			memcpy(lines[lineIndex], block+1, loc-6);
-			lineIndex++;
-		}
-
-		block = (block + loc); // Move block pointer beyond \n
-		cr = SEEK_BLOCK_CR();
-	}
-
-	// At this point, the entire PDF string array is inside lines.
-	// Let's get to parsing.
-
-	/* Unlike other parts of the PDF, the line offsets are quite variable.
-	 * Still, the whole stream is really to parse and interpret.
-	 */
+	int lineIndex = 0;
 
 	// 1: Ticket type. Extract from index 2.
 	train_type ticketType;
@@ -266,8 +239,92 @@ struct trip_information parseTravelStream(char *block)
 		.trip_ba = itineraries[1]
 	};
 
-	return trip;
+	// free(block);
 
+	return trip;
+}
+
+char ** extractTextObjectsFromStream(char *block)
+{
+	
+	/* According to the PDF specification, text objects are structures as
+	 * follows:
+	 * BT *** T[m|d] (...) Tj ET
+	 * The actual string is within parentheses. Escaping is possible via '\'.
+	 * Because matched parentheses are allowed and becaue strings may be
+	 * arbitrary in length, we need a pushdown automaton for poor people
+	 * (with token counting in place of a stack).
+	 */
+
+	char **lines = (char **)malloc(256 * sizeof(char*));
+	for (int i=0; i<256; i++)
+		lines[i] = calloc(512, 1);
+	int lineIndex = 0;
+	
+	// First step: search the buffer until we meet a BT.
+	char *head = strstr(block, "BT");
+
+	while ((head = strstr(head, "T")) != NULL) {
+		char TxP1 = *(head + 1); // Either Td or Tm end the transformation.
+		// In our case, a string will always follow.
+
+		// T precedes f and j as well, but those are useless here.
+		// T is also present in BT and ET, so filter those as well...
+		char TxM1 = *(head - 1);
+		if (TxP1 == 'j' || TxP1 == 'f' || TxM1 == 'B' || TxM1 == 'E') {
+			head++; // Advance beyond the T
+			continue; // Text printed; keep looking!
+		}
+
+		// Text transformation. This is what we want.
+		if (TxP1 == 'm' || TxP1 == 'd') {
+			// Yay!
+			head += 2; // Skips m and the opening parenthesis
+			int parenthesesCount = 0;
+			char *membuf = (char*) malloc(1024);
+			// 1k per iteration should be enough.
+			int subIndex = 0;
+			do {
+				char nextChar = *(head + subIndex);
+
+				if (nextChar == '(')
+					parenthesesCount++;
+				else if (nextChar == ')')
+					parenthesesCount--;
+
+				membuf[subIndex] = nextChar;
+
+				if (nextChar == '\\') {
+					if (*(head + subIndex + 1) == '\r') {
+						// Special case: Carriage Return -> Space
+						membuf[subIndex] = ' '; // TODO Fix; low importance
+					} else {
+						// Special case: escaping -> no par. count
+						membuf[subIndex + 1] = *(head + subIndex + 1);
+					}
+					subIndex++;
+				}
+
+				subIndex++;
+			} while (parenthesesCount > 0);
+			membuf[subIndex + 1] = '\0';
+			membuf = (char*) realloc(membuf, (strlen(membuf) + 1));
+			//printf("-> %s\n", membuf);
+			if (membuf[1] != '-') {
+				lines[lineIndex] = membuf;
+				lineIndex++;	
+			}
+			head = strstr((head + subIndex), "Tj"); // jump to text print
+		} else {
+			head++;
+			// head = strstr(head, "\n"); // jump to next line
+			continue;
+		}
+	}
+
+	lines = (char**) realloc(lines, (lineIndex + 1));
+	free(head);
+	return lines;
 }
 
 // Strips the "+City" from station names.

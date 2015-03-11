@@ -35,7 +35,8 @@ int * readXrefTable(FILE *file, int *count);
 
 // mod_travelinfo
 int getTravelStreamLength(FILE *file, int offset);
-void * getTravelStream(FILE *file, int streamOffset, int lengthOffset);
+char * getTravelStream(FILE *file, int streamOffset, int lengthOffset);
 struct trip_information parseTravelStream(char *block);
+char ** extractTextObjectsFromStream(char *block);
 
 #endif
