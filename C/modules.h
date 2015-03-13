@@ -33,10 +33,12 @@ int checkXrefTable(FILE *file);
 // mod_trailer
 int * readXrefTable(FILE *file, int *count);
 
-// mod_travelinfo
+// mod_pdfstream
 int getTravelStreamLength(FILE *file, int offset);
 char * getTravelStream(FILE *file, int streamOffset, int lengthOffset);
-struct trip_information parseTravelStream(char *block);
 char ** extractTextObjectsFromStream(char *block);
+
+// mod_travelinfo
+struct trip_information parseTravelStream(char *block);
 
 #endif
