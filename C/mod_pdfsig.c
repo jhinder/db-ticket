@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include "modules.h"
 #include "intf_file_src.h"
 
 /* Every PDF file has a bunch of binary characters after the PDF header

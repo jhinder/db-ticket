@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include "modules.h"
 #include "intf_file_src.h"
 
 /* The string "/Producer (Antenna House PDF Output Library" always begins

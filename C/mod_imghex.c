@@ -4,6 +4,7 @@
  */
 
 #include <stdio.h>
+#include "modules.h"
 #include "intf_file_src.h"
 
 /* At offset 0x1A6 a stream (which I suppose is the "DB" image in the head)

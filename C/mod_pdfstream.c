@@ -6,9 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "modules.h"
 
 // Forward declaration for tinfl.c
 void *tinfl_decompress_mem_to_heap(const void *pSrc_buf, size_t src_buf_len, size_t *pOut_len, int flags);
+
+void * createInflatedStream(void*, int);
 
 /* What we need to know:
  * The actual stream is always obj 4 0, and Flate-encoded.

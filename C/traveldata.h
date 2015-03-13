@@ -36,8 +36,8 @@ struct itinerary_section
 struct trip_information
 {
 	char *bookingID;
-	train_type train;
 	double price;
+	train_type train;
 	payment_method payment;
 	struct itinerary_section *trip_ab, *trip_ba;
 };
